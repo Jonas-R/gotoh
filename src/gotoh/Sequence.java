@@ -37,6 +37,10 @@ public class Sequence {
 		return sequence[i];
 	}
 
+	public String getID() {
+		return sequenceID;
+	}
+
 	public String toString() {
 		return sequenceID + ":" + sSequence + "\n";
 	}
