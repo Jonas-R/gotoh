@@ -55,6 +55,18 @@ public class FileUtils {
 		return new Substitutionmatrix(matrix, (int) factor, rowNames, colNames);
 	}
 
+	public static Sequence[] readSeqLib(String path) {
+		List<String> lines = readLines(path);
+		ArrayList<Sequence> seqs = new ArrayList<Sequence>();
+
+		for (String line : lines) {
+			String[] tokens = line.split(":");
+			seqs.add(new Sequence(tokens[1], tokens[0]));
+		}
+
+		return seqs.toArray(new Sequence[0]);
+	}
+
 	private static List<String> readLines(String path) {
 		ArrayList<String> lines = new ArrayList<String>();
 
