@@ -27,8 +27,8 @@ public class FileUtils {
 				double[] line_values = new double[20];
 				if (tokens.length < doubleMatrix.length) is_symmetrical = true;
 				for (int i = 0; i < tokens.length - 1;i++) {
-					if (tokens[i+1].contains(".")) {
-						decimalPlaces = Math.max(tokens[i+1].split("\\.")[1].length(), decimalPlaces);
+					if (tokens[i+1].split("\\.").length > 1) {
+						decimalPlaces = Math.max(tokens[i+1].split("\\.")[1].trim().length(), decimalPlaces);
 					}
 					line_values[i] = Double.parseDouble(tokens[i+1]);
 				}

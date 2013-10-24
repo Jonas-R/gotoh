@@ -33,4 +33,17 @@ public class Substitutionmatrix {
 		}
 		return sb.toString();
 	}
+
+
+	public int getMultiplicationFactor() {
+		return multiplicationFactor;
+	}
+
+	public String getRowNames() {
+		return rowNames;
+	}
+
+	public String getColNames() {
+		return colNames;
+	}
 }
