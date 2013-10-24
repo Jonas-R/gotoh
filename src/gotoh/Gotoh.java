@@ -22,9 +22,9 @@ public abstract class Gotoh {
 		this.gapOpen = (int) (gapOpen * submatrix.getMultiplicationFactor());
 		this.gapExtend = (int) (gapExtend * submatrix.getMultiplicationFactor());
 
-		matrixA = new int[seq1.length()][seq2.length()];
-		matrixI = new int[seq1.length()][seq2.length()];
-		matrixD = new int[seq1.length()][seq2.length()];
+		matrixA = new int[seq1.length() + 1][seq2.length() + 1];
+		matrixI = new int[seq1.length() + 1][seq2.length() + 1];
+		matrixD = new int[seq1.length() + 1][seq2.length() + 1];
 
 		for (int i = 0; i < matrixD.length; i++) {
 			matrixD[i][0] = Integer.MIN_VALUE + 1000;
