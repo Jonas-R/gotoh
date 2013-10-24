@@ -1,4 +1,4 @@
-package alignment;
+package gotoh;
 
 public class GlobalGotoh extends Gotoh {
 	public GlobalGotoh(Sequence seq1, Sequence seq2, Substitutionmatrix subMatrix, int gapOpen, int gapExtend){

@@ -1,6 +1,6 @@
-package alignment;
+package gotoh;
 
-import alignment.Substitutionmatrix;
+import gotoh.Substitutionmatrix;
 
 public class Main {
 	public static void main(String[] args) {

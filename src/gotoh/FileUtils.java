@@ -1,4 +1,6 @@
-package alignment;
+package gotoh;
+
+import gotoh.Substitutionmatrix;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import alignment.Substitutionmatrix;
 
 public class FileUtils {
 	public static Substitutionmatrix readSubstitutionMatrix(String path) {

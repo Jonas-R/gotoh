@@ -1,5 +1,8 @@
 package alignment;
 
+import gotoh.FileUtils;
+import gotoh.Sequence;
+
 import org.junit.Assert;
 import org.junit.Test;
 

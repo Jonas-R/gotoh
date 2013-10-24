@@ -1,5 +1,5 @@
-package alignment;
+package gotoh;
 
 public class LocalGotoh {
-
+	
 }

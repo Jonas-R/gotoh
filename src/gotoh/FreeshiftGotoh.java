@@ -1,4 +1,4 @@
-package alignment;
+package gotoh;
 
 public class FreeshiftGotoh {
 

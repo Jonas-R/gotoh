@@ -1,4 +1,4 @@
-package alignment;
+package gotoh;
 
 public class Substitutionmatrix {
 	public final int[][] matrix;

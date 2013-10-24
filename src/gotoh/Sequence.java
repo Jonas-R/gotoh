@@ -1,4 +1,4 @@
-package alignment;
+package gotoh;
 
 public class Sequence {
 	private static final String aa_to_int = "ARNDCQEGHILKMFPSTWYV";

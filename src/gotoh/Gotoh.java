@@ -1,4 +1,4 @@
-package alignment;
+package gotoh;
 
 public abstract class Gotoh {
 	protected Sequence seq1;
