@@ -29,6 +29,10 @@ public class Sequence {
 		return sSequence;
 	}
 
+	public int length() {
+		return sequence.length;
+	}
+
 	public String toString() {
 		return sequenceID + ":" + sSequence + "\n";
 	}
