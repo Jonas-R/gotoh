@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -56,16 +57,28 @@ public class FileUtils {
 		return new Substitutionmatrix(matrix, (int) factor, rowNames, colNames);
 	}
 
-	public static Sequence[] readSeqLib(String path) {
+	public static HashMap<String,Sequence> readSeqLib(String path) {
 		List<String> lines = readLines(path);
-		ArrayList<Sequence> seqs = new ArrayList<Sequence>();
+		HashMap<String,Sequence> seqs = new HashMap<String,Sequence>();
 
 		for (String line : lines) {
 			String[] tokens = line.split(":");
-			seqs.add(new Sequence(tokens[1], tokens[0]));
+			seqs.put(tokens[0], new Sequence(tokens[1], tokens[0]));
 		}
 
-		return seqs.toArray(new Sequence[0]);
+		return seqs;
+	}
+
+	public static String[][] readPairs(String path) {
+		List<String> lines = readLines(path);
+		ArrayList<String[]> pairs = new ArrayList<String[]>();
+
+		for (String line : lines) {
+			String[] tokens = line.split("\\s+");
+			String[] pair = {tokens[0], tokens[1]};
+			pairs.add(pair);
+		}
+		return pairs.toArray(new String[0][0]);
 	}
 
 	private static List<String> readLines(String path) {
