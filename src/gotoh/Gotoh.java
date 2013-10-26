@@ -50,12 +50,7 @@ public abstract class Gotoh {
 	}
 
 	public void fillMatrixA(int i, int j) {
-		/*System.out.println(seq1.get(i-1));
-		System.out.println(seq2.get(j-1));
-		System.out.println(submatrix.matrix[seq1.get(i-1)][seq2.get(j-1)]);
-		System.out.println(matrixD[i][j]);
-		System.out.println(matrixI[i][j]);*/
-		matrixA[i][j] = Math.max(matrixA[i-1][j-1] + submatrix.matrix[seq1.get(i-1)][seq2.get(j-1)], Math.max(matrixD[i][j], matrixI[i][j]));
+		matrixA[i][j] = getMaxValue(i,j);
 	}
 
 	public void fillMatrixI(int i, int j) {
@@ -76,5 +71,6 @@ public abstract class Gotoh {
 		matrixD[i][j] = Math.max(v1, v2);
 	}
 
-	abstract double getAlignmentScore();
+	abstract Alignment getAlignmentScore();
+	abstract int getMaxValue(int x, int y);
 }

@@ -7,30 +7,36 @@ public class FreeshiftGotoh extends Gotoh {
 	}
 
 	public void initA() {
-		int gapcost = gapOpen;
-		for (int i = 1; i < matrixA.length; i++) {
-			gapcost += gapExtend;
-			matrixA[i][0] = gapcost;
+		for (int i = 0; i < matrixA.length; i++) {
+			matrixA[i][0] = 0;
 		}
-		gapcost = gapOpen;
-		for (int j = 1; j < matrixA[0].length; j++) {
-			gapcost += gapExtend;
-			matrixA[0][j] = gapcost;
+		for (int j = 0; j < matrixA[0].length; j++) {
+			matrixA[0][j] = 0;
 		}
 	}
 
 	public int getMaxValue(int x, int y) {
-		return Math.max(matrixA[x][y], Math.max(matrixI[x][y], matrixD[x][y]));
+		return Math.max(matrixA[x-1][y-1] + submatrix.matrix[seq1.get(x-1)][seq2.get(y-1)], Math.max(matrixD[x][y], matrixI[x][y]));
 	}
 
-	public double getAlignmentScore() {
+	public Alignment getAlignmentScore() {
 		int maxScore = Integer.MIN_VALUE;
+		int xMax = 0;
+		int yMax = 0;
 		for (int i = 0; i < matrixA.length; i++) {
-			maxScore = Math.max(maxScore, matrixA[i][matrixA[i].length - 1]);
+			if (matrixA[i][matrixA[i].length - 1] > maxScore) {
+				maxScore = matrixA[i][matrixA[i].length - 1];
+				xMax = i;
+				yMax = matrixA[i].length-1;
+			}
 		}
 		for (int j = 0; j < matrixA[0].length; j++) {
-			maxScore = Math.max(maxScore, matrixA[matrixA.length - 1][j]);
+			if (matrixA[matrixA.length-1][j] > maxScore) {
+				maxScore = matrixA[matrixA.length-1][j];
+				xMax = matrixA.length-1;
+				yMax = j;
+			}
 		}
-		return maxScore / (double) submatrix.multiplicationFactor;
+		return new Alignment(maxScore / (double) submatrix.multiplicationFactor, xMax, yMax);
 	}
 }

@@ -8,23 +8,31 @@ public class LocalGotoh extends Gotoh {
 
 	public void initA() {
 		for (int i = 0; i < matrixA.length; i++) {
-			matrixA[0][i] = 0;
 			matrixA[i][0] = 0;
+		}
+		for (int j = 0; j < matrixA[0].length; j++) {
+			matrixA[0][j] = 0;
 		}
 	}
 
 	public int getMaxValue(int x, int y) {
-		int max = Math.max(matrixA[x][y], Math.max(matrixI[x][y], matrixD[x][y]));
-		return (max == 0) ? 1 : max;
+		int max = Math.max(matrixA[x-1][y-1] + submatrix.matrix[seq1.get(x-1)][seq2.get(y-1)], Math.max(matrixD[x][y], matrixI[x][y]));
+		return (max < 0) ? 0 : max;
 	}
 
-	public double getAlignmentScore() {
+	public Alignment getAlignmentScore() {
 		int maxScore = Integer.MIN_VALUE;
+		int xMax = 0;
+		int yMax = 0;
 		for (int i = 0; i < matrixA.length; i++) {
-			for (int j = 0; j < matrixA.length; j++) {
-				maxScore = Math.max(maxScore, matrixA[i][j]);
+			for (int j = 0; j < matrixA[0].length; j++) {
+				if (matrixA[i][j] > maxScore) {
+					maxScore = 	matrixA[i][j];
+					xMax = i;
+					yMax = j;
+				}
 			}
 		}
-		return maxScore / (double) submatrix.multiplicationFactor;
+		return new Alignment (maxScore / (double) submatrix.multiplicationFactor, xMax, yMax);
 	}
 }
