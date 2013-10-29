@@ -36,6 +36,10 @@ public class Sequence {
 	public int get(int i) {
 		return sequence[i];
 	}
+	
+	public char getAsChar(int i) {
+		return sSequence.charAt(i);
+	}
 
 	public String getID() {
 		return sequenceID;

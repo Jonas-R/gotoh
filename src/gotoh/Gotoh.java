@@ -36,7 +36,7 @@ public abstract class Gotoh {
 
 	public Alignment runAlignment() {
 		fillMatrices();
-		return null;
+		return getAlignmentScore();
 	}
 
 	public void fillMatrices() {
@@ -73,4 +73,5 @@ public abstract class Gotoh {
 
 	abstract Alignment getAlignmentScore();
 	abstract int getMaxValue(int x, int y);
+	abstract void backtrack(Alignment ali);
 }

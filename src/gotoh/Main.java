@@ -23,16 +23,17 @@ public class Main {
 			Gotoh gotoh;
 			if (config.mode.equals("global")) {
 				gotoh = new GlobalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend);
-				gotoh.runAlignment();
-				System.out.println(seq1.getID() + " " + seq2.getID() + " " + gotoh.getAlignmentScore().maxScore);
 			} else if (config.mode.equals("local")) {
 				gotoh = new LocalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend);
-				gotoh.runAlignment();
-				System.out.println(gotoh.getAlignmentScore().maxScore);
 			} else {
 				gotoh = new FreeshiftGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend);
-				gotoh.runAlignment();
-				System.out.println(gotoh.getAlignmentScore().maxScore);
+			}
+			Alignment ali = gotoh.runAlignment();
+			System.out.println(">" + seq1.getID() + " " + seq2.getID() + " " + ali.maxScore);
+			if (config.printali) {
+				gotoh.backtrack(ali);
+				System.out.println(gotoh.seq1.getID() + ": " + ali.aliSeq1);
+				System.out.println(gotoh.seq2.getID() + ": " + ali.aliSeq2);
 			}
 		}
 	}

@@ -39,4 +39,8 @@ public class FreeshiftGotoh extends Gotoh {
 		}
 		return new Alignment(maxScore / (double) submatrix.multiplicationFactor, xMax, yMax);
 	}
+	
+	public void backtrack(Alignment ali) {
+		return;
+	}
 }
