@@ -37,8 +37,6 @@ public class LocalGotoh extends Gotoh {
 	}
 
 	public void backtrack(Alignment ali) {
-		int posLeftSeq1 = seq1.length();
-		int posLeftSeq2 = seq2.length();
 		StringBuilder alignedSeq1 = new StringBuilder();
 		StringBuilder alignedSeq2 = new StringBuilder();
 
@@ -51,8 +49,6 @@ public class LocalGotoh extends Gotoh {
 				alignedSeq2.append(seq2.getAsChar(y-1));
 				x--;
 				y--;
-				posLeftSeq1--;
-				posLeftSeq2--;
 			}
 			else if(matrixA[x][y] == matrixD[x][y]){
 				int gapLength = 1;
@@ -67,7 +63,6 @@ public class LocalGotoh extends Gotoh {
 					else break;
 				}
 				y -= gapLength;
-				posLeftSeq2 -= gapLength;
 			}
 			else if(matrixA[x][y] == matrixI[x][y]){
 				int gapLength = 1;
@@ -82,19 +77,18 @@ public class LocalGotoh extends Gotoh {
 					else break;
 				}
 				x -= gapLength;
-				posLeftSeq1 -= gapLength;
 			}
 		}
 
-		int firstPos = Math.max (x, y);
-		for (int i = 0; i < firstPos; i++) {
-			if ((x - i) <= 0) {
+		int firstPos = Math.max(x, y);
+		for (int i = 0; i <= firstPos; i++) {
+			if ((x - i) < 0) {
 				alignedSeq1.append('-');
 				alignedSeq2.append(seq2.getAsChar(y - i));
 			}
-			else if ((y - i) <= 0) {
+			else if ((y - i) < 0) {
 				alignedSeq1.append(seq1.getAsChar(x - i));
-				alignedSeq1.append('-');
+				alignedSeq2.append('-');
 			}
 			else {
 				alignedSeq1.append(seq1.getAsChar(x - i));
@@ -104,16 +98,15 @@ public class LocalGotoh extends Gotoh {
 		alignedSeq1 = alignedSeq1.reverse();
 		alignedSeq2 = alignedSeq2.reverse();
 
-		int lastPos = Math.min(x, y) - 1;
 		int alignmentLength = Math.max(seq1.length(), seq2.length());
-		for (int i = x; i < alignmentLength; i++) {
+		for (int i = ali.xMax; i <= seq1.length(); i++) {
 			if (i < seq1.length()) {
 				alignedSeq1.append(seq1.getAsChar(i));
 			} else {
 				alignedSeq1.append('-');
 			}
 		}
-		for (int i = y; i < alignmentLength; i++) {
+		for (int i = ali.yMax; i <= seq2.length(); i++) {
 			if (i < seq2.length()) {
 				alignedSeq2.append(seq2.getAsChar(i));
 			} else {
