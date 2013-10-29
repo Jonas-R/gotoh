@@ -14,13 +14,19 @@ public abstract class Gotoh {
 	protected int gapExtend;
 
 	public Gotoh(Sequence seq1, Sequence seq2, Substitutionmatrix submatrix,
-			double gapOpen, double gapExtend) {
+			double gapOpen, double gapExtend, int multiplicationFactor) {
 		this.seq1 = seq1;
 		this.seq2 = seq2;
 		this.submatrix = submatrix;
-		//TODO Fix this for arbitrary precision
-		this.gapOpen = (int) (gapOpen * submatrix.getMultiplicationFactor());
-		this.gapExtend = (int) (gapExtend * submatrix.getMultiplicationFactor());
+		if (multiplicationFactor <= submatrix.getMultiplicationFactor()) {
+			this.gapOpen = (int) (gapOpen * submatrix.getMultiplicationFactor());
+			this.gapExtend = (int) (gapExtend * submatrix.getMultiplicationFactor());
+		} else {
+			this.gapOpen = (int) (gapOpen * multiplicationFactor);
+			this.gapExtend = (int) (gapExtend * multiplicationFactor);
+			this.submatrix.applyMultiplicationFactor(multiplicationFactor/this.submatrix.getMultiplicationFactor());
+		}
+
 
 		matrixA = new int[seq1.length() + 1][seq2.length() + 1];
 		matrixI = new int[seq1.length() + 1][seq2.length() + 1];

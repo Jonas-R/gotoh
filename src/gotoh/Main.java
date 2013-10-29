@@ -2,12 +2,14 @@ package gotoh;
 
 import java.util.HashMap;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.BasicParser;
+
 import gotoh.Substitutionmatrix;
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.Switch;
 
 
 public class Main {
@@ -22,11 +24,11 @@ public class Main {
 			Sequence seq2 = seqLib.get(pair[1]);
 			Gotoh gotoh;
 			if (config.mode.equals("global")) {
-				gotoh = new GlobalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend);
+				gotoh = new GlobalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend, config.multiplicationFactor);
 			} else if (config.mode.equals("local")) {
-				gotoh = new LocalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend);
+				gotoh = new LocalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend, config.multiplicationFactor);
 			} else {
-				gotoh = new FreeshiftGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend);
+				gotoh = new FreeshiftGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend, config.multiplicationFactor);
 			}
 			Alignment ali = gotoh.runAlignment();
 			System.out.println(">" + seq1.getID() + " " + seq2.getID() + " " + ali.maxScore);
@@ -39,85 +41,116 @@ public class Main {
 	}
 
 	private static Configuration readArgs(String[] args) {
-		JSAP jsap = new JSAP();
-        FlaggedOption pairs = new FlaggedOption("pairs")
-        	.setRequired(true)
-        	.setShortFlag(JSAP.NO_SHORTFLAG)
-        	.setLongFlag("pairs");
+		Options options = new Options();
+		Option pairs = new Option("pairs", true, "");
+		Option seqlib = new Option("seqlib", true, "");
+		Option matrix = new Option("m", true, "");
+		Option go = new Option("go", true, "");
+		Option ge = new Option("ge", true, "");
+		Option mode = new Option("mode", true, "");
+		Option printmatrices = new Option("printmatrices", false, "");
+		Option check = new Option("check", false, "");
+		Option printali = new Option("printali", false, "");
 
-        FlaggedOption seqlib = new FlaggedOption("seqlib")
-        	.setRequired(true)
-        	.setShortFlag(JSAP.NO_SHORTFLAG)
-        	.setLongFlag("seqlib");
+		options.addOption(pairs);
+		options.addOption(seqlib);
+		options.addOption(matrix);
+		options.addOption(go);
+		options.addOption(ge);
+		options.addOption(mode);
+		options.addOption(printmatrices);
+		options.addOption(check);
+		options.addOption(printali);
 
-        FlaggedOption matrix = new FlaggedOption("matrix")
-        	.setRequired(false)
-        	.setShortFlag('m')
-        	.setLongFlag("matrix")
-        	.setDefault("dayhoff");
+		CommandLineParser parser = new BasicParser();
+		Configuration config = null;
+	    try {
+	        // parse the command line arguments
+	        CommandLine line = parser.parse( options, args );
+	        boolean _check = line.hasOption("check");
+	        boolean _printali = line.hasOption("printali");
+	        String _pairs = "";
+	        if (line.hasOption("pairs")) {
+	        	_pairs = line.getOptionValue("pairs");
+	        } else {
+	        	System.out.println(ERROR_MESSAGE);
+	        	System.exit(1);
+	        }
 
-        FlaggedOption go = new FlaggedOption("go")
-	    	.setRequired(false)
-	    	.setShortFlag(JSAP.NO_SHORTFLAG)
-	    	.setLongFlag("go")
-	    	.setDefault("-12");
+	        String _seqlib = "";
+	        if (line.hasOption("seqlib")) {
+	        	_seqlib = line.getOptionValue("seqlib");
+	        } else {
+	        	System.out.println(ERROR_MESSAGE);
+	        	System.exit(1);
+	        }
 
-        FlaggedOption ge = new FlaggedOption("ge")
-	    	.setRequired(false)
-	    	.setShortFlag(JSAP.NO_SHORTFLAG)
-	    	.setLongFlag("ge")
-	    	.setDefault("-1");
+	        String _matrix;
+	        if (line.hasOption("m")) {
+	        	_matrix = line.getOptionValue("m");
+	        } else {
+	        	_matrix = "dayhoff";
+	        }
+	        if (!_matrix.contains("/")) {
+	        	_matrix = MATRIX_FOLDER + _matrix;
+	        }
+	        if (!_matrix.endsWith(".mat")) {
+	        	_matrix += ".mat";
+	        }
 
-        FlaggedOption mode = new FlaggedOption("mode")
-	    	.setRequired(false)
-	    	.setShortFlag(JSAP.NO_SHORTFLAG)
-	    	.setLongFlag("mode")
-	    	.setDefault("freeshift");
+	        double _go;
+	        int decimalPlaces = 0;
+	        if (line.hasOption("go")) {
+	        	_go = Double.parseDouble(line.getOptionValue("go"));
+	        	if (line.getOptionValue("go").split("\\.").length > 1) {
+					decimalPlaces = Math.max(line.getOptionValue("go").split("\\.")[1].trim().length(), decimalPlaces);
+				};
+	        } else {
+	        	_go = -12;
+	        }
 
-        FlaggedOption printmatrices = new FlaggedOption("printmatrices")
-	    	.setRequired(false)
-	    	.setShortFlag(JSAP.NO_SHORTFLAG)
-	    	.setLongFlag("printmatrices")
-	    	.setDefault("none");
+	        double _ge;
+	        if (line.hasOption("ge")) {
+	        	_ge = Double.parseDouble(line.getOptionValue("ge"));
+	        	if (line.getOptionValue("ge").split("\\.").length > 1) {
+					decimalPlaces = Math.max(line.getOptionValue("ge").split("\\.")[1].trim().length(), decimalPlaces);
+				};
+	        } else {
+	        	_ge = -1;
+	        }
 
-        Switch printcheck = new Switch("check")
-			.setShortFlag(JSAP.NO_SHORTFLAG)
-			.setLongFlag("check");
+	        String _mode;
+	        if (line.hasOption("mode")) {
+	        	_mode = line.getOptionValue("mode");
+	        } else {
+	        	_mode = "freeshift";
+	        }
+	        if (!(_mode.equals("freeshift") || _mode.equals("local") || _mode.equals("global"))) {
+	        	System.out.println(ERROR_MESSAGE);
+	        	System.exit(1);
+	        }
 
-        Switch printali = new Switch("printali")
-			.setShortFlag(JSAP.NO_SHORTFLAG)
-			.setLongFlag("printali");
+	        String _printmatrices = "";
+	        if (line.hasOption("printmatrices")) {
+	        	_printmatrices = line.getOptionValue("printmatrices");
+	        } else {
+	        	_printmatrices = "false";
+	        }
+	        if (!(_printmatrices.equals("html") || _printmatrices.equals("txt") || _printmatrices.equals("false"))) {
+	        	System.out.println(ERROR_MESSAGE);
+	        	System.exit(1);
+	        }
 
-        Configuration configuration = null;
-        try {
-        	jsap.registerParameter(pairs);
-        	jsap.registerParameter(seqlib);
-        	jsap.registerParameter(go);
-        	jsap.registerParameter(ge);
-        	jsap.registerParameter(mode);
-        	jsap.registerParameter(printmatrices);
-        	jsap.registerParameter(printcheck);
-        	jsap.registerParameter(printali);
-        	jsap.registerParameter(matrix);
-        	JSAPResult config = jsap.parse(args);
-
-        	if (!config.success()) {
-        		System.out.print(ERROR_MESSAGE);
-        		System.exit(1);
-        	}
-
-        	configuration = new Configuration(config.getString("pairs"), config.getString("seqlib"), config.getString("matrix"),
-        			Double.parseDouble(config.getString("go")), Double.parseDouble(config.getString("ge"))
-        			, config.getString("mode"), config.getBoolean("printali"), config.getString("printmatrices"), config.getBoolean("check"));
-        } catch (JSAPException ex) {
-        	System.out.println(ex);
-        	System.exit(1);
-        }
-
-        return configuration;
+	        return new Configuration(_pairs, _seqlib, _matrix,
+			_go, _ge, (int) Math.pow(10, decimalPlaces), _mode, _printali, _printmatrices, _check);
+	    }
+	    catch( ParseException exp ) {
+	        System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
+	        System.exit(1);
+	    }
+	    return null;
 	}
-	//TODO Error Message
-	private static final String ERROR_MESSAGE = "java -jar train.jar --db <dssp-file> --method <gor1|gor3|gor4> --model <model-file>\nOptions:\n" +
-			"\t--db <dssp-file>\tpath to training file\n\t--method <gor1|gor3|gor4>\tmethod\n\t--model <model file>\t" +
-			"model file output\n";
+
+	private static final String MATRIX_FOLDER = "/home/proj/biosoft/praktikum/genprakt-ws13/assignment1/matrices/";
+	private static final String ERROR_MESSAGE = "usage:\nalign mode: gotoh -seqlib <seqlibfile> -pairs <pairsfile> <optional parameter>\n        in align mode gotoh will calculate the similarity scores (and the alignments if requested) based on the method of \n   Gotoh. An improved algorithm for * matching biological sequences. J. Mol. Biol., 162:705-708, 1982. \n        where seqlibfile is a file containing sequences (one a line) in format id:seq\n        where pairs is a file containing lines with at least two columns (id1 id2) separated by whitespace\n        the optional parameters are:\n                -mode <alimode> one of local|global|freeshift (defaults to freeshift)\n                -matrix <AA exchange matrix file> (defaults to dayhoff)\n                -go <gap open> float value to gap open cost (defaults to -12)\n                -ge <gap extend> float value to gap extend cost (defaults to -1) (the first gap will cost gap open + gap extend!)\n                -printali if set the alignments will be printed\n\n\ncheck mode: gotoh -check <alilibfile> <optional parameter>\n        in check mode gotoh will read alignments realign them with the settings, check if the scores differ, \n        and if the alignment implicated score differs from the input score. If none of the above condition is \n        fullfilled then the alignment is correct and no output will be generated. Otherwise the binary will report \n        the input alignment the correct alignment given the settings and the score differences. \n        This means, that if the input file contains only correct alignments no output will be generated. \n\n        params: alilibfile is a file containing alignments given by three lines in the following format:\n        >id1 id2 score <additional columns are ignored>\n        id1: <aligned sequence for id1>\n        id2: <aligned sequence for id2>\n                where aligned sequence should contain only gaps '-' and the letters from the sequence of the given id\n                to generate an example input for checking you can invoke the binary with -printali\n        the optional parameters are:\n                -mode <alimode> one of local|global|freeshift (defaults to freeshift)\n                -matrix <AA exchange matrix file> (defaults to dayhoff)\n                -go <gap open> float value to gap open cost (defaults to -12)\n                -ge <gap extend> float value to gap extend cost (defaults to -1) (the first gap will cost gap open + gap extend!)";
 }

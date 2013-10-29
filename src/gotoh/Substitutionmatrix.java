@@ -34,6 +34,14 @@ public class Substitutionmatrix {
 		return sb.toString();
 	}
 
+	public void applyMultiplicationFactor(int multiplicationFactor) {
+		int[][] matrix = new int[20][20];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				matrix[i][j] = matrix[i][j] * multiplicationFactor;
+			}
+		}
+	}
 
 	public int getMultiplicationFactor() {
 		return multiplicationFactor;
