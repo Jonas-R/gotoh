@@ -99,20 +99,23 @@ public class LocalGotoh extends Gotoh {
 		alignedSeq2 = alignedSeq2.reverse();
 
 		int alignmentLength = Math.max(seq1.length(), seq2.length());
-		for (int i = ali.xMax; i <= seq1.length(); i++) {
-			if (i < seq1.length()) {
-				alignedSeq1.append(seq1.getAsChar(i));
-			} else {
+		x = ali.xMax - 1;
+		y = ali.yMax - 1;
+		while (x <= seq1.length() || y <= seq2.length()) {
+			if (x > seq1.length()) {
 				alignedSeq1.append('-');
+				alignedSeq2.append(seq2.getAsChar(y-1));
 			}
-		}
-		for (int i = ali.yMax; i <= seq2.length(); i++) {
-			if (i < seq2.length()) {
-				alignedSeq2.append(seq2.getAsChar(i));
-			} else {
+			else if (y > seq2.length()) {
+				alignedSeq1.append(seq1.getAsChar(x-1));
 				alignedSeq2.append('-');
 			}
+			else {
+				alignedSeq1.append(seq1.getAsChar(x-1));
+				alignedSeq2.append(seq2.getAsChar(y-1));
+			}
 		}
+		
 		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString());
 	}
 }
