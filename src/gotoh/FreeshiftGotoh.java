@@ -83,8 +83,9 @@ public class FreeshiftGotoh extends Gotoh {
 				x -= gapLength;
 			}
 		}
-
-		while(x> 0){
+		int xStart = x;
+		int yStart = y;
+		while(x > 0){
 			alignedSeq1.append(seq1.getAsChar(x - 1));
 			alignedSeq2.append('-');
 			x--;
@@ -110,6 +111,6 @@ public class FreeshiftGotoh extends Gotoh {
 			alignedSeq2.append(seq2.getAsChar(y-1));
 			y++;
 		}
-		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString());
+		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString(), xStart, yStart);
 	}
 }

@@ -89,6 +89,6 @@ public class GlobalGotoh extends Gotoh {
 				alignedSeq2.append(seq2.getAsChar(posLeftSeq2 - 1));
 				posLeftSeq2--;
 		}
-		ali.addAlignment(alignedSeq1.reverse().toString(), alignedSeq2.reverse().toString());
+		ali.addAlignment(alignedSeq1.reverse().toString(), alignedSeq2.reverse().toString(), 0, 0);
 	}
 }

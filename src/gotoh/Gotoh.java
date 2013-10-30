@@ -77,6 +77,10 @@ public abstract class Gotoh {
 		matrixD[i][j] = Math.max(v1, v2);
 	}
 
+	public boolean checkScore(Alignment ali) {
+		return true;
+	}
+
 	abstract Alignment getAlignmentScore();
 	abstract int getMaxValue(int x, int y);
 	abstract void backtrack(Alignment ali);

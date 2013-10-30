@@ -111,6 +111,6 @@ public class LocalGotoh extends Gotoh {
 			y++;
 		}
 
-		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString());
+		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString(), x, y);
 	}
 }
