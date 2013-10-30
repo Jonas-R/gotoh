@@ -1,6 +1,7 @@
 package gotoh;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,7 +32,7 @@ public class Main {
 				gotoh = new FreeshiftGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend, config.multiplicationFactor);
 			}
 			Alignment ali = gotoh.runAlignment();
-			System.out.println(">" + seq1.getID() + " " + seq2.getID() + " " + ali.maxScore);
+			System.out.println(">" + seq1.getID() + " " + seq2.getID() + " " + String.format(Locale.US, "%2." + (int) Math.log10((double) matrix.multiplicationFactor) + "f", ali.maxScore));
 			if (config.printali) {
 				gotoh.backtrack(ali);
 				System.out.println(gotoh.seq1.getID() + ": " + ali.aliSeq1);

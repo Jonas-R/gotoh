@@ -41,8 +41,6 @@ public class FreeshiftGotoh extends Gotoh {
 	}
 
 	public void backtrack(Alignment ali) {
-		int posLeftSeq1 = seq1.length();
-		int posLeftSeq2 = seq2.length();
 		StringBuilder alignedSeq1 = new StringBuilder();
 		StringBuilder alignedSeq2 = new StringBuilder();
 
@@ -55,15 +53,13 @@ public class FreeshiftGotoh extends Gotoh {
 				alignedSeq2.append(seq2.getAsChar(y-1));
 				x--;
 				y--;
-				posLeftSeq1--;
-				posLeftSeq2--;
 			}
 			else if(matrixA[x][y] == matrixD[x][y]){
 				int gapLength = 1;
 				alignedSeq1.append('-');
 				alignedSeq2.append(seq2.getAsChar(y-1));
-				while(matrixA[x][y - gapLength] + gapOpen + gapLength * gapExtend == matrixA[x][y]){
-					if(y == gapLength){
+				while(matrixA[x][y - gapLength] + gapOpen + gapLength * gapExtend != matrixA[x][y]) {
+					if(y > gapLength){
 						alignedSeq1.append('-');
 						alignedSeq2.append(seq2.getAsChar(y - gapLength - 1));
 						gapLength++;
@@ -71,14 +67,13 @@ public class FreeshiftGotoh extends Gotoh {
 					else break;
 				}
 				y -= gapLength;
-				posLeftSeq2 -= gapLength;
 			}
 			else if(matrixA[x][y] == matrixI[x][y]){
 				int gapLength = 1;
 				alignedSeq1.append(seq1.getAsChar(x-1));
 				alignedSeq2.append('-');
-				while(matrixA[x - gapLength][y]+ gapOpen + gapLength * gapExtend  == matrixA[x][y]){
-					if(x - gapLength > 0){
+				while(matrixA[x - gapLength][y] + gapOpen + gapLength * gapExtend  != matrixA[x][y]){
+					if(x > gapLength){
 						alignedSeq1.append(seq1.getAsChar(x - gapLength -1));
 						alignedSeq2.append('-');
 						gapLength++;
@@ -86,20 +81,35 @@ public class FreeshiftGotoh extends Gotoh {
 					else break;
 				}
 				x -= gapLength;
-				posLeftSeq1 -= gapLength;
 			}
 		}
 
-		while(posLeftSeq1 > 0){
-			alignedSeq1.append(seq1.getAsChar(posLeftSeq1 - 1));
+		while(x> 0){
+			alignedSeq1.append(seq1.getAsChar(x - 1));
 			alignedSeq2.append('-');
-			posLeftSeq1--;
+			x--;
 		}
-		while(posLeftSeq2 > 0){
+		while(y > 0){
 				alignedSeq1.append('-');
-				alignedSeq2.append(seq2.getAsChar(posLeftSeq2 - 1));
-				posLeftSeq2--;
+				alignedSeq2.append(seq2.getAsChar(y - 1));
+				y--;
 		}
-		ali.addAlignment(alignedSeq1.reverse().toString(), alignedSeq2.reverse().toString());
+
+		alignedSeq1 = alignedSeq1.reverse();
+		alignedSeq2 = alignedSeq2.reverse();
+
+		x = ali.xMax + 1;
+		y = ali.yMax + 1;
+		while (x <= seq1.length()) {
+			alignedSeq1.append(seq1.getAsChar(x-1));
+			alignedSeq2.append('-');
+			x++;
+		}
+		while (y <= seq2.length()) {
+			alignedSeq1.append('-');
+			alignedSeq2.append(seq2.getAsChar(y-1));
+			y++;
+		}
+		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString());
 	}
 }

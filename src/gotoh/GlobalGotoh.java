@@ -50,8 +50,8 @@ public class GlobalGotoh extends Gotoh {
 				int gapLength = 1;
 				alignedSeq1.append('-');
 				alignedSeq2.append(seq2.getAsChar(y-1));
-				while(matrixA[x][y - gapLength] + gapOpen + gapLength * gapExtend == matrixA[x][y]){
-					if(y == gapLength){
+				while(matrixA[x][y - gapLength] + gapOpen + gapLength * gapExtend != matrixA[x][y]) {
+					if(y > gapLength){
 						alignedSeq1.append('-');
 						alignedSeq2.append(seq2.getAsChar(y - gapLength - 1));
 						gapLength++;
@@ -65,8 +65,8 @@ public class GlobalGotoh extends Gotoh {
 				int gapLength = 1;
 				alignedSeq1.append(seq1.getAsChar(x-1));
 				alignedSeq2.append('-');
-				while(matrixA[x - gapLength][y]+ gapOpen + gapLength * gapExtend  == matrixA[x][y]){
-					if(x - gapLength > 0){
+				while(matrixA[x - gapLength][y] + gapOpen + gapLength * gapExtend  != matrixA[x][y]){
+					if(x > gapLength){
 						alignedSeq1.append(seq1.getAsChar(x - gapLength -1));
 						alignedSeq2.append('-');
 						gapLength++;
@@ -76,6 +76,7 @@ public class GlobalGotoh extends Gotoh {
 				x -= gapLength;
 				posLeftSeq1 -= gapLength;
 			}
+
 		}
 
 		while(posLeftSeq1 > 0){

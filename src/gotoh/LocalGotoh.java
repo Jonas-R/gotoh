@@ -54,8 +54,8 @@ public class LocalGotoh extends Gotoh {
 				int gapLength = 1;
 				alignedSeq1.append('-');
 				alignedSeq2.append(seq2.getAsChar(y-1));
-				while(matrixA[x][y - gapLength] + gapOpen + gapLength * gapExtend == matrixA[x][y]){
-					if(y == gapLength){
+				while(matrixA[x][y - gapLength] + gapOpen + gapLength * gapExtend != matrixA[x][y]) {
+					if(y > gapLength){
 						alignedSeq1.append('-');
 						alignedSeq2.append(seq2.getAsChar(y - gapLength - 1));
 						gapLength++;
@@ -68,8 +68,8 @@ public class LocalGotoh extends Gotoh {
 				int gapLength = 1;
 				alignedSeq1.append(seq1.getAsChar(x-1));
 				alignedSeq2.append('-');
-				while(matrixA[x - gapLength][y]+ gapOpen + gapLength * gapExtend  == matrixA[x][y]){
-					if(x - gapLength > 0){
+				while(matrixA[x - gapLength][y] + gapOpen + gapLength * gapExtend  != matrixA[x][y]){
+					if(x > gapLength){
 						alignedSeq1.append(seq1.getAsChar(x - gapLength -1));
 						alignedSeq2.append('-');
 						gapLength++;
@@ -81,41 +81,36 @@ public class LocalGotoh extends Gotoh {
 		}
 
 		int firstPos = Math.max(x, y);
-		for (int i = 0; i <= firstPos; i++) {
-			if ((x - i) < 0) {
-				alignedSeq1.append('-');
-				alignedSeq2.append(seq2.getAsChar(y - i));
-			}
-			else if ((y - i) < 0) {
+		for (int i = 1; i <= firstPos; i++) {
+			if (x > i) {
 				alignedSeq1.append(seq1.getAsChar(x - i));
 				alignedSeq2.append('-');
 			}
-			else {
-				alignedSeq1.append(seq1.getAsChar(x - i));
+			else break;
+		}
+		for (int i = 1; i <= firstPos; i++) {
+			if (y > i) {
+				alignedSeq1.append('-');
 				alignedSeq2.append(seq2.getAsChar(y - i));
 			}
+			else break;
 		}
 		alignedSeq1 = alignedSeq1.reverse();
 		alignedSeq2 = alignedSeq2.reverse();
 
-		int alignmentLength = Math.max(seq1.length(), seq2.length());
-		x = ali.xMax - 1;
-		y = ali.yMax - 1;
-		while (x <= seq1.length() || y <= seq2.length()) {
-			if (x > seq1.length()) {
-				alignedSeq1.append('-');
-				alignedSeq2.append(seq2.getAsChar(y-1));
-			}
-			else if (y > seq2.length()) {
-				alignedSeq1.append(seq1.getAsChar(x-1));
-				alignedSeq2.append('-');
-			}
-			else {
-				alignedSeq1.append(seq1.getAsChar(x-1));
-				alignedSeq2.append(seq2.getAsChar(y-1));
-			}
+		x = ali.xMax + 1;
+		y = ali.yMax + 1;
+		while (x <= seq1.length()) {
+			alignedSeq1.append(seq1.getAsChar(x-1));
+			alignedSeq2.append('-');
+			x++;
 		}
-		
+		while (y <= seq2.length()) {
+			alignedSeq1.append('-');
+			alignedSeq2.append(seq2.getAsChar(y-1));
+			y++;
+		}
+
 		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString());
 	}
 }
