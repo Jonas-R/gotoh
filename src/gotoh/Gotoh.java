@@ -3,6 +3,9 @@ package gotoh;
 public abstract class Gotoh {
 	protected Sequence seq1;
 	protected Sequence seq2;
+        
+        protected int[] intSeq1;
+        protected int[] intSeq2;
 
 	protected Substitutionmatrix submatrix;
 
@@ -17,6 +20,8 @@ public abstract class Gotoh {
 			double gapOpen, double gapExtend, int multiplicationFactor) {
 		this.seq1 = seq1;
 		this.seq2 = seq2;
+                this.intSeq1 = seq1.sequence;
+                this.intSeq2 = seq2.sequence;
 		this.submatrix = submatrix;
 		if (multiplicationFactor <= submatrix.getMultiplicationFactor()) {
 			this.gapOpen = (int) (gapOpen * submatrix.getMultiplicationFactor());
@@ -31,13 +36,13 @@ public abstract class Gotoh {
 		matrixA = new int[seq1.length() + 1][seq2.length() + 1];
 		matrixI = new int[seq1.length() + 1][seq2.length() + 1];
 		matrixD = new int[seq1.length() + 1][seq2.length() + 1];
-
-		for (int i = 0; i < matrixD.length; i++) {
-			matrixD[i][0] = Integer.MIN_VALUE + 1000;
-		}
+                for (int[] matrixD1 : matrixD) {
+                    matrixD1[0] = Integer.MIN_VALUE + 1000;
+                }
 		for (int j = 0; j < matrixI[0].length; j++) {
 			matrixI[0][j] = Integer.MIN_VALUE + 1000;
 		}
+                
 	}
 
 	public Alignment runAlignment() {
@@ -60,25 +65,37 @@ public abstract class Gotoh {
 	}
 
 	public void fillMatrixI(int i, int j) {
-		int v1 = matrixA[i-1][j] + gapOpen + gapExtend;
-		//int v2;
-		//if (matrixI[i-1][j] != Integer.MIN_VALUE) {
-			int v2 = matrixI[i-1][j] + gapExtend;
-		//} else { v2 = Integer.MIN_VALUE; }
-		matrixI[i][j] = Math.max(v1, v2);
+		matrixI[i][j] = Math.max(matrixA[i-1][j] + gapOpen + gapExtend, matrixI[i-1][j] + gapExtend);
 	}
 
 	public void fillMatrixD(int i, int j) {
-		int v1 = matrixA[i][j-1] + gapOpen + gapExtend;
-		//int v2;
-		//if (matrixD[i][j-1] != Integer.MIN_VALUE) {
-			int v2 = matrixD[i][j-1] + gapExtend;
-		//} else { v2 = Integer.MIN_VALUE; }
-		matrixD[i][j] = Math.max(v1, v2);
+		matrixD[i][j] = Math.max(matrixA[i][j-1] + gapOpen + gapExtend, matrixD[i][j-1] + gapExtend);
 	}
 
-	public boolean checkScore(Alignment ali) {
-		return true;
+	public double checkScore(Alignment ali) {
+		int score = 0;
+		for (int i = ali.startOfAlignment; i < ali.endOfAlignment; i++) {
+			if (ali.aliSeq1.charAt(i) == '-') {
+				score += gapOpen + gapExtend;
+				i++;
+				while (ali.aliSeq1.charAt(i) == '-') {
+					score += gapExtend;
+					i++;
+				}
+			}
+			else if (ali.aliSeq2.charAt(i) == '-') {
+				score += gapOpen + gapExtend;
+				i++;
+				while (ali.aliSeq2.charAt(i) == '-') {
+					score += gapExtend;
+					i++;
+				}
+			}
+			else {
+				score += submatrix.getValue(ali.aliSeq1.charAt(i), ali.aliSeq2.charAt(i));
+			}
+		}
+		return (score / (double) submatrix.getMultiplicationFactor());
 	}
 
 	abstract Alignment getAlignmentScore();

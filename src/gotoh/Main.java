@@ -20,10 +20,13 @@ public class Main {
 		HashMap<String, Sequence> seqLib = FileUtils.readSeqLib(config.seqlib);
 		Substitutionmatrix matrix = FileUtils.readSubstitutionMatrix(config.matrix);
 
+		StringBuilder falseAlignments = new StringBuilder();
+                StringBuilder output = new StringBuilder();
 		for (String[] pair : pairs) {
 			Sequence seq1 = seqLib.get(pair[0]);
 			Sequence seq2 = seqLib.get(pair[1]);
 			Gotoh gotoh;
+                        String formatString = "%2." + (int) Math.log10((double) matrix.multiplicationFactor) + "f";
 			if (config.mode.equals("global")) {
 				gotoh = new GlobalGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend, config.multiplicationFactor);
 			} else if (config.mode.equals("local")) {
@@ -32,13 +35,78 @@ public class Main {
 				gotoh = new FreeshiftGotoh(seq1, seq2, matrix, config.gapOpen, config.gapExtend, config.multiplicationFactor);
 			}
 			Alignment ali = gotoh.runAlignment();
-			System.out.println(">" + seq1.getID() + " " + seq2.getID() + " " + String.format(Locale.US, "%2." + (int) Math.log10((double) matrix.multiplicationFactor) + "f", ali.maxScore));
-			if (config.printali) {
+			output.append('>');
+			output.append(seq1.getID());
+                        output.append(' ');
+                        output.append(seq2.getID());
+                        output.append(' ');
+                        output.append(String.format(Locale.US, formatString, ali.maxScore));
+                        output.append('\n');
+
+
+                        if (config.printali) {
 				gotoh.backtrack(ali);
-				System.out.println(gotoh.seq1.getID() + ": " + ali.aliSeq1);
-				System.out.println(gotoh.seq2.getID() + ": " + ali.aliSeq2);
+                                output.append(gotoh.seq1.getID());
+                                output.append(": ");
+                                output.append(ali.aliSeq1);
+                                output.append('\n');
+                                output.append(gotoh.seq2.getID());
+                                output.append(": ");
+                                output.append(ali.aliSeq2);
+                                output.append('\n');
 			}
+			if (config.check) {
+				double checkScore = gotoh.checkScore(ali);
+				if (checkScore - ali.maxScore > 0.01) {
+					falseAlignments.append(">").append(gotoh.seq1.getID()).append(":").append(gotoh.seq2.getID()).append(" ").append(ali.maxScore).append(" ").append(checkScore).append("\n");
+					falseAlignments.append(ali.aliSeq1).append("\n");
+					falseAlignments.append(ali.aliSeq2).append("\n");
+					falseAlignments.append("\n");
+				}
+			}
+                    switch (config.printmatrices) {
+                        case "txt":
+                            output.append("MATRIX A");
+                            output.append(printMatrix(gotoh.matrixA));
+                            output.append('\n');
+                            output.append("MATRIX I");
+                            output.append(printMatrix(gotoh.matrixI));
+                            output.append('\n');
+                            output.append("MATRIX D");
+                            output.append(printMatrix(gotoh.matrixD));
+                            output.append('\n');
+                            break;
+                        case "html":
+                            output.append("<html><pre>");
+                            output.append("MATRIX A");
+                            output.append(printMatrix(gotoh.matrixA));
+                            output.append('\n');
+                            output.append("MATRIX I");
+                            output.append(printMatrix(gotoh.matrixI));
+                            output.append('\n');
+                            output.append("MATRIX D");
+                            output.append(printMatrix(gotoh.matrixD));
+                            output.append('\n');
+                            output.append("</pre></html>");
+                            break;
+                    }
 		}
+		if (!(falseAlignments.length() == 0)) {
+			FileUtils.writeFalseAlignments("gotoh_out_false_alignments.txt", falseAlignments.toString());
+		}
+                System.out.println(output);
+	}
+
+	private static StringBuilder printMatrix(int[][] matrix) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				sb.append(matrix[i][j]);
+				sb.append('\t');
+			}
+			sb.append('\n');
+		}
+		return sb;
 	}
 
 	private static Configuration readArgs(String[] args) {
@@ -49,7 +117,7 @@ public class Main {
 		Option go = new Option("go", true, "");
 		Option ge = new Option("ge", true, "");
 		Option mode = new Option("mode", true, "");
-		Option printmatrices = new Option("printmatrices", false, "");
+		Option printmatrices = new Option("printmatrices", true, "");
 		Option check = new Option("check", false, "");
 		Option printali = new Option("printali", false, "");
 
@@ -64,7 +132,6 @@ public class Main {
 		options.addOption(printali);
 
 		CommandLineParser parser = new BasicParser();
-		Configuration config = null;
 	    try {
 	        // parse the command line arguments
 	        CommandLine line = parser.parse( options, args );
@@ -132,7 +199,7 @@ public class Main {
 	        }
 
 	        String _printmatrices = "";
-	        if (line.hasOption("printmatrices")) {
+	        if (line.hasOption("printmatrices") && line.getOptionValue("printmatrices") != null) {
 	        	_printmatrices = line.getOptionValue("printmatrices");
 	        } else {
 	        	_printmatrices = "false";

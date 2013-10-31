@@ -7,6 +7,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +88,37 @@ public class FileUtils {
 			pairs.add(pair);
 		}
 		return pairs.toArray(new String[0][0]);
+	}
+
+	public static void writeFalseAlignments(String path, String content) {
+		writeString(path, content);
+	}
+
+	public static void writeString(String path, String content) {
+		//Open file
+		Path jPath = Paths.get(path);
+
+		//Create file if necessary
+		if (!Files.exists(jPath, LinkOption.NOFOLLOW_LINKS)) {
+			try {
+				Files.createFile(jPath);
+			} catch (IOException ex) {
+				System.out.print(ex);
+				System.exit(1);
+			}
+		}
+
+		//Error if not writable
+		if (!Files.isWritable(jPath)) {
+			System.out.println("File " + jPath + " could not be written!");
+			System.exit(1);
+		}
+		//Write lines
+		try {
+			Files.write(jPath, content.getBytes(Charset.forName("UTF-8")));
+		} catch (IOException ex) {
+			System.out.println(ex);
+		}
 	}
 
 	private static List<String> readLines(String path) {

@@ -4,8 +4,8 @@ public class Alignment {
 	double maxScore;
 	int xMax;
 	int yMax;
-	int xStart;
-	int yStart;
+	int startOfAlignment;
+	int endOfAlignment;
 	String aliSeq1;
 	String aliSeq2;
 
@@ -17,10 +17,10 @@ public class Alignment {
 		aliSeq2 = "";
 	}
 
-	public void addAlignment(String aliSeq1, String aliSeq2, int xStart, int yStart) {
+	public void addAlignment(String aliSeq1, String aliSeq2, int startOfAlignment, int endOfAlignment) {
 		this.aliSeq1 = aliSeq1;
 		this.aliSeq2 = aliSeq2;
-		this.xStart = xStart;
-		this.yStart = yStart;
+		this.startOfAlignment = startOfAlignment;
+		this.endOfAlignment = endOfAlignment;
 	}
 }

@@ -16,7 +16,7 @@ public class FreeshiftGotoh extends Gotoh {
 	}
 
 	public int getMaxValue(int x, int y) {
-		return Math.max(matrixA[x-1][y-1] + submatrix.matrix[seq1.get(x-1)][seq2.get(y-1)], Math.max(matrixD[x][y], matrixI[x][y]));
+		return Math.max(matrixA[x-1][y-1] + submatrix.matrix[intSeq1[x-1]][intSeq2[y-1]], Math.max(matrixD[x][y], matrixI[x][y]));
 	}
 
 	public Alignment getAlignmentScore() {
@@ -48,7 +48,7 @@ public class FreeshiftGotoh extends Gotoh {
 		int y = ali.yMax;
 
 		while(x > 0 && y > 0){
-			if(matrixA[x][y] == matrixA[x-1][y-1] + submatrix.matrix[seq1.get(x-1)][seq2.get(y-1)] ){
+			if(matrixA[x][y] == matrixA[x-1][y-1] + submatrix.matrix[intSeq1[x-1]][intSeq2[y-1]] ){
 				alignedSeq1.append(seq1.getAsChar(x-1));
 				alignedSeq2.append(seq2.getAsChar(y-1));
 				x--;
@@ -83,8 +83,7 @@ public class FreeshiftGotoh extends Gotoh {
 				x -= gapLength;
 			}
 		}
-		int xStart = x;
-		int yStart = y;
+		int startAlignment = x + y;
 		while(x > 0){
 			alignedSeq1.append(seq1.getAsChar(x - 1));
 			alignedSeq2.append('-');
@@ -98,7 +97,7 @@ public class FreeshiftGotoh extends Gotoh {
 
 		alignedSeq1 = alignedSeq1.reverse();
 		alignedSeq2 = alignedSeq2.reverse();
-
+		int endAlignment = alignedSeq1.length();
 		x = ali.xMax + 1;
 		y = ali.yMax + 1;
 		while (x <= seq1.length()) {
@@ -111,6 +110,6 @@ public class FreeshiftGotoh extends Gotoh {
 			alignedSeq2.append(seq2.getAsChar(y-1));
 			y++;
 		}
-		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString(), xStart, yStart);
+		ali.addAlignment(alignedSeq1.toString(), alignedSeq2.toString(), startAlignment, endAlignment);
 	}
 }

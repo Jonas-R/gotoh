@@ -19,15 +19,18 @@ public class GlobalGotoh extends Gotoh {
 		}
 	}
 
+        @Override
 	public int getMaxValue(int x, int y) {
-		return Math.max(matrixA[x-1][y-1] + submatrix.matrix[seq1.get(x-1)][seq2.get(y-1)], Math.max(matrixD[x][y], matrixI[x][y]));
+		return Math.max(matrixA[x-1][y-1] + submatrix.matrix[intSeq1[x-1]][intSeq2[y-1]], Math.max(matrixD[x][y], matrixI[x][y]));
 	}
 
+        @Override
 	public Alignment getAlignmentScore() {
 		double maxScore = matrixA[matrixA.length-1][matrixA[0].length-1] / (double) submatrix.multiplicationFactor;
 		return new Alignment(maxScore, matrixA.length - 1, matrixA[0].length - 1);
 	}
 
+        @Override
 	public void backtrack(Alignment ali) {
 		int posLeftSeq1 = seq1.length();
 		int posLeftSeq2 = seq2.length();
@@ -38,7 +41,7 @@ public class GlobalGotoh extends Gotoh {
 		int y = ali.yMax;
 
 		while(x > 0 && y > 0){
-			if(matrixA[x][y] == matrixA[x-1][y-1] + submatrix.matrix[seq1.get(x-1)][seq2.get(y-1)] ){
+			if(matrixA[x][y] == matrixA[x-1][y-1] + submatrix.matrix[intSeq1[x-1]][intSeq2[y-1]] ){
 				alignedSeq1.append(seq1.getAsChar(x-1));
 				alignedSeq2.append(seq2.getAsChar(y-1));
 				x--;
@@ -89,6 +92,6 @@ public class GlobalGotoh extends Gotoh {
 				alignedSeq2.append(seq2.getAsChar(posLeftSeq2 - 1));
 				posLeftSeq2--;
 		}
-		ali.addAlignment(alignedSeq1.reverse().toString(), alignedSeq2.reverse().toString(), 0, 0);
+		ali.addAlignment(alignedSeq1.reverse().toString(), alignedSeq2.reverse().toString(), 0, ali.aliSeq1.length());
 	}
 }
