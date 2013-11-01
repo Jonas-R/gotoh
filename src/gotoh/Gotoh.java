@@ -74,11 +74,12 @@ public abstract class Gotoh {
 
 	public double checkScore(Alignment ali) {
 		int score = 0;
-		for (int i = ali.startOfAlignment; i < ali.endOfAlignment; i++) {
+		int i = ali.startOfAlignment;
+		while(i < ali.endOfAlignment) {
 			if (ali.aliSeq1.charAt(i) == '-') {
 				score += gapOpen + gapExtend;
 				i++;
-				while (ali.aliSeq1.charAt(i) == '-') {
+				while (i < ali.endOfAlignment && ali.aliSeq1.charAt(i) == '-') {
 					score += gapExtend;
 					i++;
 				}
@@ -86,13 +87,14 @@ public abstract class Gotoh {
 			else if (ali.aliSeq2.charAt(i) == '-') {
 				score += gapOpen + gapExtend;
 				i++;
-				while (ali.aliSeq2.charAt(i) == '-') {
+				while (i < ali.endOfAlignment && ali.aliSeq2.charAt(i) == '-') {
 					score += gapExtend;
 					i++;
 				}
 			}
 			else {
 				score += submatrix.getValue(ali.aliSeq1.charAt(i), ali.aliSeq2.charAt(i));
+				i++;
 			}
 		}
 		return (score / (double) submatrix.getMultiplicationFactor());
