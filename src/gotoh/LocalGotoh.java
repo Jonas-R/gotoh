@@ -1,6 +1,6 @@
 package gotoh;
 
-public class LocalGotoh extends Gotoh {
+public final class LocalGotoh extends Gotoh {
 
     public LocalGotoh(Sequence seq1, Sequence seq2, Substitutionmatrix subMatrix, double gapOpen, double gapExtend, int multiplicationFactor) {
         super(seq1, seq2, subMatrix, gapOpen, gapExtend, multiplicationFactor);
@@ -8,19 +8,21 @@ public class LocalGotoh extends Gotoh {
     }
 
     public void initA() {
-        for (int i = 0; i < matrixA.length; i++) {
-            matrixA[i][0] = 0;
+        for (int[] matrixA1 : matrixA) {
+            matrixA1[0] = 0;
         }
         for (int j = 0; j < matrixA[0].length; j++) {
             matrixA[0][j] = 0;
         }
     }
 
+    @Override
     public int getMaxValue(int x, int y) {
         int max = Math.max(matrixA[x - 1][y - 1] + submatrix.matrix[intSeq1[x - 1]][intSeq2[y - 1]], Math.max(matrixD[x][y], matrixI[x][y]));
         return (max < 0) ? 0 : max;
     }
 
+    @Override
     public Alignment getAlignmentScore() {
         int maxScore = Integer.MIN_VALUE;
         int xMax = 0;
@@ -37,6 +39,7 @@ public class LocalGotoh extends Gotoh {
         return new Alignment(maxScore / (double) submatrix.multiplicationFactor, xMax, yMax);
     }
 
+    @Override
     public void backtrack(Alignment ali) {
         StringBuilder alignedSeq1 = new StringBuilder();
         StringBuilder alignedSeq2 = new StringBuilder();
